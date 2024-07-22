@@ -1,0 +1,195 @@
+{% assign showAnnouncement = false %}
+{% for block in section.blocks %}
+  {% if block.settings.title != blank %}
+    {% assign showAnnouncement = true %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+{% if showAnnouncement %}
+  <style>
+    body
+    {
+      padding: 0px;
+      margin: 0px;
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .announcement-bar-wrapper {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      padding: 0px 0px;
+      margin: 0px;
+      position: relative;
+    }
+    .single-announcement-bar {
+      display: none;
+      width: 100%;
+      max-width: 100%;
+      padding: 10px 60px;
+      margin: 0px; 
+      text-align: center;
+    }
+    .single-announcement-bar * {
+      padding: 0px 0px;
+      margin: 0px;
+    }
+    .close-announcement
+    {
+      position: absolute;
+      top: 50%;
+      right: 0px;
+      display: inline-block;
+      vertical-align: top;
+      color: #fff;
+      font-size: 12px;
+      lin-height: 12px;
+      padding: 10px;
+      margin: 0px;
+      transform: translateY(-50%);
+    }
+  </style>
+  <div class="announcement-bar-wrapper">
+    {% for block in section.blocks %}
+      {% if block.settings.title != blank %}
+        <div class="single-announcement-bar" style="{% if block.settings.text_color != blank %}color: {{ block.settings.text_color }};{% endif %} {% if block.settings.background_color != blank %}background-color: {{ block.settings.background_color }};{% endif %}" data-coupon="{{ block.settings.coupon_code }}" data-utm="{{ block.settings.utm_code }}">
+          {{ block.settings.title }}
+        </div>
+      {% endif %}
+    {% endfor %}
+    <a href="#" class="close-announcement">Close</a>
+  </div>
+{% endif %}
+<script>
+  function getCustomUrlParameters() {
+    const queryParams = new URLSearchParams(window.location.search);
+    const params = {};
+    
+    // Iterate over all keys/values in the URL query parameters
+    for (const [key, value] of queryParams) {
+      params[key] = value;
+    }
+    
+    return params;
+  }
+  function setCustomCookie(name, value, daysToLive) {
+      let cookie = name + "=" + encodeURIComponent(value);
+
+      if (daysToLive) {
+          let expirationDate = new Date();
+          expirationDate.setDate(expirationDate.getDate() + daysToLive);
+          cookie += "; expires=" + expirationDate.toUTCString();
+      }
+
+      document.cookie = cookie;
+  }
+  function getCustomCookie(name) {
+      let cookies = document.cookie.split(";");
+
+      for (let cookie of cookies) {
+          let [cookieName, cookieValue] = cookie.split("=").map(c => c.trim());
+          if (cookieName === name) {
+              return decodeURIComponent(cookieValue);
+          }
+      }
+
+      return null;
+  }
+  addEventListener("DOMContentLoaded", (event) => {
+    document.querySelector(".close-announcement").addEventListener("click", e => {
+        e.preventDefault();
+      setCustomCookie("showAnnouncement", "No", 30);
+      document.querySelector(".announcement-bar-wrapper").style.display = "none";
+    });
+    var getallSlides = document.querySelectorAll(".announcement-bar-wrapper .single-announcement-bar");
+    if(getallSlides)
+    {
+      let showAnnouncement = getCustomCookie("showAnnouncement");
+      if(typeof showAnnouncement != "undefined" && showAnnouncement != "" && showAnnouncement != null)
+      {
+
+      }
+      else
+      {
+        var getParamters = getCustomUrlParameters();
+        var getCurrentCounter = "";
+        if(typeof getParamters.utm_medium != "undefined" && getParamters.utm_medium != null && getParamters.utm_medium != "")
+        {
+          var getUrlUTM = getParamters.utm_medium;
+        }
+        for (var i = 0; i < getallSlides.length; i++) {
+          var getUTM = getallSlides[i].getAttribute("data-utm");
+          var getCopounCode = getallSlides[i].getAttribute("data-coupon");
+          if(typeof getUTM != "undefined" && getUTM != null)
+          {
+            if(getUTM == getUrlUTM)
+            {
+              getCurrentCounter = i;
+            }
+            if (window.location.pathname.indexOf(getCopounCode) > -1) 
+            {
+              getCurrentCounter = i;
+            }
+          }
+        }
+        if(typeof getCurrentCounter != "undefined" && getCurrentCounter != null)
+        {
+          getallSlides[getCurrentCounter].style.display="block";
+        }
+      }
+    }
+  });
+</script>
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "class": "announcement-bar-section",
+  "enabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "title",
+          "label": "Text"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background color",
+          "default": "#000000"
+        },
+        {
+          "type": "text",
+          "id": "coupon_code",
+          "label": "Coupon code"
+        },
+        {
+          "type": "text",
+          "id": "utm_code",
+          "label": "UTM code"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar"
+    }
+  ]
+}
+{% endschema %}

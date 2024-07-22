@@ -1,0 +1,28 @@
+{
+  "name": "Header",
+  "type": "header",
+  "sections": {
+    "custom-announcement-bar": {
+      "type": "custom-announcement-bar",
+      "blocks": {
+        "announcement_fJCrxF": {
+          "type": "announcement",
+          "settings": {
+            "title": "<p>Your 15% off discount code WELCOME15 will auto-apply at checkout.<\/p>",
+            "text_color": "#ffffff",
+            "background_color": "#000000",
+            "coupon_code": "WELCOME15",
+            "utm_code": "google"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_fJCrxF"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "custom-announcement-bar"
+  ]
+}
